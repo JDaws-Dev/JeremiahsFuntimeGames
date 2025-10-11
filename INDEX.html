@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jeremiah's Funtime Games — Neon Snake</title>
+  <style>
+    :root{
+      --bg:#0b0033;
+      --accent:#00fff2;
+      --accent2:#ff00d0;
+      --text:#ffffff;
+    }
+    body{
+      margin:0; background: radial-gradient(circle at 50% 50%, #210066, var(--bg));
+      color:var(--text); font-family: 'Trebuchet MS', sans-serif;
+      display:flex; align-items:center; justify-content:center; flex-direction:column; height:100vh;
+    }
+    h1{
+      text-shadow:0 0 20px var(--accent),0 0 40px var(--accent2);
+      font-size:2.5rem;
+    }
+    canvas{
+      border:2px solid var(--accent);
+      box-shadow:0 0 25px var(--accent2);
+      background: radial-gradient(circle at 50% 50%, #1a003d, #0b0033);
+    }
+    #scoreboard{margin-top:10px;}
+    #bestscore{margin-top:5px; opacity:0.9;}
+    button{
+      background:var(--accent2);
+      color:var(--text);
+      border:none;
+      border-radius:10px;
+      padding:10px 20px;
+      font-size:1rem;
+      cursor:pointer;
+      box-shadow:0 0 10px var(--accent2);
+      margin:5px;
+    }
+    button:hover{box-shadow:0 0 20px var(--accent);}
+  </style>
+</head>
+<body>
+  <h1>Jeremiah's Funtime Games</h1>
+  <canvas id="game" width="400" height="400"></canvas>
+  <div id="scoreboard">Score: <span id="score">0</span></div>
+  <div id="bestscore">High Score: <span id="best">0</span></div>
+  <div>
+    <button id="start">Start</button>
+    <button id="pause">Pause</button>
+    <button id="toggleSFX">SFX: ON</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const startBtn = document.getElementById('start');
+    const pauseBtn = document.getElementById('pause');
+    const sfxBtn = document.getElementById('toggleSFX');
+
+    let box = 20;
+    let snake;
+    let direction;
+    let food;
+    let score;
+    let best = Number(localStorage.getItem('neon_snake_best') || 0);
+    bestEl.textContent = best;
+    let game;
+    let paused = false;
+    let sfxEnabled = true;
+
+    const eatSound = new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg');
+    const crashSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+    const moveSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+
+    function playSound(sound){
+      if(!sfxEnabled) return;
+      sound.currentTime=0;
+      sound.play();
+    }
+
+    function reset(){
+      snake = [{x:10*box, y:10*box}];
+      direction = 'RIGHT';
+      food = {
+        x: Math.floor(Math.random()*20)*box,
+        y: Math.floor(Math.random()*20)*box
+      };
+      score = 0;
+      scoreEl.textContent = score;
+    }
+
+    function draw(){
+      ctx.fillStyle = '#10004f';
+      ctx.fillRect(0,0,400,400);
+
+      for(let i=0;i<snake.length;i++){
+        ctx.fillStyle = i==0 ? '#00fff2' : '#ff00d0';
+        ctx.shadowBlur=15;
+        ctx.shadowColor=i==0?'#00fff2':'#ff00d0';
+        ctx.fillRect(snake[i].x,snake[i].y,box,box);
+      }
+
+      ctx.fillStyle = '#ffff00';
+      ctx.shadowBlur=20;
+      ctx.shadowColor='#ffff00';
+      ctx.fillRect(food.x, food.y, box, box);
+
+      let snakeX = snake[0].x;
+      let snakeY = snake[0].y;
+
+      if(direction=='LEFT') snakeX -= box;
+      if(direction=='UP') snakeY -= box;
+      if(direction=='RIGHT') snakeX += box;
+      if(direction=='DOWN') snakeY += box;
+
+      if(snakeX == food.x && snakeY == food.y){
+        score++;
+        scoreEl.textContent = score;
+        playSound(eatSound);
+        food = {
+          x: Math.floor(Math.random()*20)*box,
+          y: Math.floor(Math.random()*20)*box
+        };
+      } else {
+        snake.pop();
+      }
+
+      let newHead = {x:snakeX, y:snakeY};
+
+      if(snakeX<0 || snakeY<0 || snakeX>=400 || snakeY>=400 || collision(newHead,snake)){
+        clearInterval(game);
+        playSound(crashSound);
+        if(score > best){
+          best = score;
+          localStorage.setItem('neon_snake_best', best);
+          bestEl.textContent = best;
+        }
+        alert('Game Over! Your score: ' + score);
+        reset();
+        return;
+      }
+
+      snake.unshift(newHead);
+    }
+
+    function collision(head, array){
+      for(let i=0;i<array.length;i++){
+        if(head.x==array[i].x && head.y==array[i].y){return true;}
+      }
+      return false;
+    }
+
+    document.addEventListener('keydown', e=>{
+      if(e.key==='ArrowLeft' && direction!='RIGHT'){direction='LEFT'; playSound(moveSound);}
+      else if(e.key==='ArrowUp' && direction!='DOWN'){direction='UP'; playSound(moveSound);}
+      else if(e.key==='ArrowRight' && direction!='LEFT'){direction='RIGHT'; playSound(moveSound);}
+      else if(e.key==='ArrowDown' && direction!='UP'){direction='DOWN'; playSound(moveSound);}
+    });
+
+    startBtn.onclick=()=>{
+      clearInterval(game);
+      reset();
+      game=setInterval(draw,100);
+    };
+
+    pauseBtn.onclick=()=>{
+      if(!paused){
+        clearInterval(game);
+        paused=true;
+        pauseBtn.textContent='Resume';
+      } else {
+        game=setInterval(draw,100);
+        paused=false;
+        pauseBtn.textContent='Pause';
+      }
+    };
+
+    sfxBtn.onclick=()=>{
+      sfxEnabled=!sfxEnabled;
+      sfxBtn.textContent = sfxEnabled ? 'SFX: ON' : 'SFX: OFF';
+    };
+
+    reset();
+  </script>
+</body>
+</html>
