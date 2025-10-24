@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokemon: This or That</title>
+    <title>Pokemon Name Quiz</title>
     <style>
         * {
             margin: 0;
@@ -12,183 +12,274 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
         .container {
-            text-align: center;
-            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
             width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         h1 {
-            color: white;
-            font-size: 3rem;
+            color: #2a5298;
+            font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .subtitle {
-            color: #f0f0f0;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-        }
-
-        .stats {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
-            color: white;
-            font-size: 1.1rem;
         }
 
-        .battle-area {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            align-items: stretch;
-            flex-wrap: wrap;
+        .score-item {
+            text-align: center;
         }
 
-        .pokemon-card {
-            background: white;
-            border-radius: 20px;
+        .score-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .correct {
+            color: #28a745;
+        }
+
+        .incorrect {
+            color: #dc3545;
+        }
+
+        .quiz-area {
+            text-align: center;
+        }
+
+        .pokemon-display {
+            background: #f8f9fa;
             padding: 30px;
-            min-width: 280px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .pokemon-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
-
-        .pokemon-card.loading {
-            cursor: wait;
-            opacity: 0.7;
+            border-radius: 15px;
+            margin-bottom: 30px;
         }
 
         .pokemon-image {
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             object-fit: contain;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .question {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-        .pokemon-name {
-            font-size: 1.8rem;
-            font-weight: bold;
+        .option-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
             color: #333;
+            font-weight: 500;
             text-transform: capitalize;
-            margin-bottom: 10px;
         }
 
-        .pokemon-id {
-            color: #666;
-            font-size: 1rem;
-            margin-bottom: 10px;
+        .option-btn:hover:not(:disabled) {
+            border-color: #2a5298;
+            background: #f0f4ff;
+            transform: translateY(-2px);
         }
 
-        .pokemon-types {
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .option-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .feedback {
+            min-height: 60px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 20px;
         }
 
-        .type-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
+        .feedback.correct-feedback {
+            color: #28a745;
+        }
+
+        .feedback.incorrect-feedback {
+            color: #dc3545;
+        }
+
+        .next-btn {
+            background: #2a5298;
             color: white;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            font-weight: bold;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
-        .vs-text {
-            color: white;
-            font-size: 3rem;
-            font-weight: bold;
-            align-self: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .next-btn:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
         }
 
-        .loading-spinner {
-            color: white;
-            font-size: 1.5rem;
-            margin: 20px;
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        /* Pokemon type colors */
-        .type-normal { background-color: #A8A878; }
-        .type-fire { background-color: #F08030; }
-        .type-water { background-color: #6890F0; }
-        .type-electric { background-color: #F8D030; }
-        .type-grass { background-color: #78C850; }
-        .type-ice { background-color: #98D8D8; }
-        .type-fighting { background-color: #C03028; }
-        .type-poison { background-color: #A040A0; }
-        .type-ground { background-color: #E0C068; }
-        .type-flying { background-color: #A890F0; }
-        .type-psychic { background-color: #F85888; }
-        .type-bug { background-color: #A8B820; }
-        .type-rock { background-color: #B8A038; }
-        .type-ghost { background-color: #705898; }
-        .type-dragon { background-color: #7038F8; }
-        .type-dark { background-color: #705848; }
-        .type-steel { background-color: #B8B8D0; }
-        .type-fairy { background-color: #EE99AC; }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            padding: 40px;
+        }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
-            .vs-text {
-                font-size: 2rem;
+
+            .pokemon-image {
+                width: 200px;
+                height: 200px;
             }
-            .pokemon-card {
-                min-width: 100%;
+
+            .option-btn {
+                padding: 15px;
+                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚡ Pokemon: This or That ⚡</h1>
-        <p class="subtitle">Click on your favorite Pokemon!</p>
-        
-        <div class="stats">
-            <p>Battles Completed: <strong id="battleCount">0</strong></p>
+        <div class="header">
+            <h1>🎮 Pokemon Name Quiz</h1>
         </div>
 
-        <div class="battle-area" id="battleArea">
-            <div class="loading-spinner">Loading Pokemon...</div>
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Correct</div>
+                <div class="score-value correct" id="correctScore">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Incorrect</div>
+                <div class="score-value incorrect" id="incorrectScore">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Streak</div>
+                <div class="score-value" id="streakScore">0</div>
+            </div>
+        </div>
+
+        <div class="quiz-area" id="quizArea">
+            <div class="loading">Loading Pokemon...</div>
         </div>
     </div>
 
     <script>
-        let battleCount = 0;
-        const MAX_POKEMON = 898; // Gen 1-8 Pokemon
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let currentStreak = 0;
+        let currentPokemon = null;
+        let answered = false;
+
+        const MAX_POKEMON = 898;
+
+        // Hilarious fake Pokemon names
+        const funnyNames = [
+            'Chonkachu', 'Snorlaxative', 'Pikaboo', 'Bulbasore', 'Charredmander',
+            'Squirtle-neck', 'Jigglytuff-guy', 'Meowthwash', 'Psyducky', 'Alakazamn',
+            'Machoptimus-prime', 'Geodude-bro', 'Fartfetch\'d', 'Slowpoke-go',
+            'Hypnotronic', 'Exeggcute-order', 'Tangletoes', 'Mr.Mime-time',
+            'Jynxy-minx', 'Electrabuzz-off', 'Magmartian', 'Dittothis',
+            'Eevee-body', 'Vaporwave', 'Farteon', 'Snorlaxx', 'Mewthree',
+            'Togepissy', 'Pikachungus', 'Wobbuffet-table', 'Unown-able',
+            'Pikablu', 'Diglettuce', 'Meowstic-al', 'Purrfect', 'Spheal-good',
+            'Wailord-and-savior', 'Caterpillar-ranger', 'Butterfree-style',
+            'Beadrill-sergeant', 'Raticator', 'Spearowhead', 'Arboking',
+            'Weepingbell-pepper', 'Victreebel-yell', 'Tentacruel-world',
+            'Rapidash-board', 'Magnemighty', 'Farfetch\'d-up', 'Duduo',
+            'Dodrio-grande', 'Seelion', 'Dewgonnalearn', 'Grimertime',
+            'Mukkake', 'Shellderane', 'Gastly-bill', 'Haunterella',
+            'Gengarbagecan', 'Onixpected', 'Drowzeezy', 'Krabbypatty',
+            'Voltorbius', 'Exeggutortilla', 'Cuboné', 'Marowak-and-roll',
+            'Hitmonleeroy', 'Hitmonchanandler', 'Lickilicky-split', 'Koffing-up',
+            'Weezingbad', 'Rhyhorny', 'Tangelangelo', 'Kangaskangaroo',
+            'Horseawesome', 'Seakingsize', 'Goldeenager', 'Staryugi',
+            'Starmiester', 'Mr.Mime-your-business', 'Scytherspace', 'Electabuzzkill',
+            'Magmarley', 'Pinsiriously', 'Taurosaurus', 'Magikarpet',
+            'Gyaradoscious', 'Laprasputin', 'Dittohead', 'Eeveelution',
+            'Omastar-trek', 'Kabutopsicle', 'Aerodactylicious', 'Snorlaxury',
+            'Articunope', 'Zapdospecial', 'Moltres-leches', 'Dragonitemares',
+            'Mewtwoface', 'Mewthree-hundred'
+        ];
 
         // Get random Pokemon ID
         function getRandomPokemonId() {
             return Math.floor(Math.random() * MAX_POKEMON) + 1;
         }
 
-        // Fetch Pokemon data from PokeAPI
+        // Fetch Pokemon data
         async function fetchPokemon(id) {
             try {
                 const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
@@ -200,80 +291,121 @@
             }
         }
 
-        // Create Pokemon card HTML
-        function createPokemonCard(pokemon) {
-            const card = document.createElement('div');
-            card.className = 'pokemon-card';
-            card.onclick = () => selectPokemon(pokemon.name);
-
-            const types = pokemon.types.map(typeInfo => 
-                `<span class="type-badge type-${typeInfo.type.name}">${typeInfo.type.name}</span>`
-            ).join('');
-
-            card.innerHTML = `
-                <img src="${pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default}" 
-                     alt="${pokemon.name}" 
-                     class="pokemon-image">
-                <div class="pokemon-name">${pokemon.name}</div>
-                <div class="pokemon-id">#${String(pokemon.id).padStart(3, '0')}</div>
-                <div class="pokemon-types">${types}</div>
-            `;
-
-            return card;
+        // Get random items from array
+        function getRandomItems(arr, count) {
+            const shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
         }
 
-        // Handle Pokemon selection
-        function selectPokemon(name) {
-            battleCount++;
-            document.getElementById('battleCount').textContent = battleCount;
+        // Generate answer options
+        async function generateOptions(correctPokemon) {
+            const options = [correctPokemon.name];
             
-            // Add a brief visual feedback
-            const cards = document.querySelectorAll('.pokemon-card');
-            cards.forEach(card => card.style.pointerEvents = 'none');
+            // Add 1 funny fake name
+            const funnyName = funnyNames[Math.floor(Math.random() * funnyNames.length)];
+            options.push(funnyName);
             
-            setTimeout(() => {
-                loadNewBattle();
-            }, 300);
-        }
-
-        // Load a new battle with two random Pokemon
-        async function loadNewBattle() {
-            const battleArea = document.getElementById('battleArea');
-            battleArea.innerHTML = '<div class="loading-spinner">Loading Pokemon...</div>';
-
-            // Get two different random Pokemon
-            let id1 = getRandomPokemonId();
-            let id2 = getRandomPokemonId();
-            while (id1 === id2) {
-                id2 = getRandomPokemonId();
+            // Add 2 real Pokemon names (different from the correct one)
+            while (options.length < 4) {
+                const randomId = getRandomPokemonId();
+                const randomPokemon = await fetchPokemon(randomId);
+                if (randomPokemon && randomPokemon.name !== correctPokemon.name && !options.includes(randomPokemon.name)) {
+                    options.push(randomPokemon.name);
+                }
             }
-
-            // Fetch both Pokemon concurrently
-            const [pokemon1, pokemon2] = await Promise.all([
-                fetchPokemon(id1),
-                fetchPokemon(id2)
-            ]);
-
-            // Clear and create new battle
-            battleArea.innerHTML = '';
             
-            if (pokemon1 && pokemon2) {
-                battleArea.appendChild(createPokemonCard(pokemon1));
-                
-                const vsText = document.createElement('div');
-                vsText.className = 'vs-text';
-                vsText.textContent = 'VS';
-                battleArea.appendChild(vsText);
-                
-                battleArea.appendChild(createPokemonCard(pokemon2));
+            // Shuffle options
+            return options.sort(() => 0.5 - Math.random());
+        }
+
+        // Update score display
+        function updateScores() {
+            document.getElementById('correctScore').textContent = correctCount;
+            document.getElementById('incorrectScore').textContent = incorrectCount;
+            document.getElementById('streakScore').textContent = currentStreak;
+        }
+
+        // Handle answer selection
+        function selectAnswer(selectedName, button) {
+            if (answered) return;
+            answered = true;
+
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const feedback = document.getElementById('feedback');
+            const isCorrect = selectedName === currentPokemon.name;
+
+            if (isCorrect) {
+                button.classList.add('correct');
+                correctCount++;
+                currentStreak++;
+                feedback.textContent = `✓ Correct! It's ${currentPokemon.name}!`;
+                feedback.className = 'feedback correct-feedback';
             } else {
-                battleArea.innerHTML = '<div class="loading-spinner">Error loading Pokemon. Retrying...</div>';
-                setTimeout(loadNewBattle, 1000);
+                button.classList.add('incorrect');
+                incorrectCount++;
+                currentStreak = 0;
+                
+                // Highlight the correct answer
+                buttons.forEach(btn => {
+                    if (btn.textContent === currentPokemon.name) {
+                        btn.classList.add('correct');
+                    }
+                });
+                
+                feedback.textContent = `✗ Wrong! It's ${currentPokemon.name}, not ${selectedName}`;
+                feedback.className = 'feedback incorrect-feedback';
             }
+
+            updateScores();
+            document.getElementById('nextBtn').disabled = false;
         }
 
-        // Initialize the game
-        loadNewBattle();
+        // Load new question
+        async function loadQuestion() {
+            answered = false;
+            const quizArea = document.getElementById('quizArea');
+            quizArea.innerHTML = '<div class="loading">Loading next Pokemon...</div>';
+
+            const pokemonId = getRandomPokemonId();
+            currentPokemon = await fetchPokemon(pokemonId);
+
+            if (!currentPokemon) {
+                quizArea.innerHTML = '<div class="loading">Error loading Pokemon. Retrying...</div>';
+                setTimeout(loadQuestion, 1000);
+                return;
+            }
+
+            const options = await generateOptions(currentPokemon);
+            
+            quizArea.innerHTML = `
+                <div class="pokemon-display">
+                    <img src="${currentPokemon.sprites.other['official-artwork'].front_default || currentPokemon.sprites.front_default}" 
+                         alt="Mystery Pokemon" 
+                         class="pokemon-image">
+                </div>
+                
+                <div class="question">What's this Pokemon's name?</div>
+                
+                <div class="options">
+                    ${options.map(name => `
+                        <button class="option-btn" onclick="selectAnswer('${name}', this)">
+                            ${name}
+                        </button>
+                    `).join('')}
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+                
+                <button class="next-btn" id="nextBtn" onclick="loadQuestion()" disabled>
+                    Next Pokemon →
+                </button>
+            `;
+        }
+
+        // Initialize game
+        loadQuestion();
     </script>
 </body>
 </html>
