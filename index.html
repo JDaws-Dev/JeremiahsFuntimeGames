@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokemon Name Quiz</title>
+    <title>Pokemon Hub - Quiz & Database</title>
     <style>
         * {
             margin: 0;
@@ -25,10 +25,212 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 700px;
+            max-width: 1200px;
             width: 100%;
             padding: 40px;
         }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: #2a5298;
+        }
+
+        .tab-btn.active {
+            color: #2a5298;
+            border-bottom-color: #2a5298;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .database-controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-section label {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .filter-section input,
+        .filter-section select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-section input:focus,
+        .filter-section select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .load-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .load-btn:hover {
+            background: #218838;
+        }
+
+        .load-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .database-status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .pokemon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .pokemon-card-small {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pokemon-card-small:hover {
+            border-color: #2a5298;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .pokemon-card-small img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
+
+        .pokemon-card-small .name {
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0 5px 0;
+            text-transform: capitalize;
+        }
+
+        .pokemon-card-small .id {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .pokemon-card-small .types {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .pokemon-card-small .type-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .pokemon-card-small .stats {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .pokemon-card-small .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 1.1rem;
+        }
+
+        /* Pokemon type colors */
+        .type-normal { background-color: #A8A878; }
+        .type-fire { background-color: #F08030; }
+        .type-water { background-color: #6890F0; }
+        .type-electric { background-color: #F8D030; color: #333; }
+        .type-grass { background-color: #78C850; }
+        .type-ice { background-color: #98D8D8; }
+        .type-fighting { background-color: #C03028; }
+        .type-poison { background-color: #A040A0; }
+        .type-ground { background-color: #E0C068; }
+        .type-flying { background-color: #A890F0; }
+        .type-psychic { background-color: #F85888; }
+        .type-bug { background-color: #A8B820; }
+        .type-rock { background-color: #B8A038; }
+        .type-ghost { background-color: #705898; }
+        .type-dragon { background-color: #7038F8; }
+        .type-dark { background-color: #705848; }
+        .type-steel { background-color: #B8B8D0; }
+        .type-fairy { background-color: #EE99AC; }
 
         .header {
             text-align: center;
@@ -197,6 +399,19 @@
             h1 {
                 font-size: 1.8rem;
             }
+            
+            .tabs {
+                gap: 5px;
+            }
+            
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .database-controls {
+                grid-template-columns: 1fr;
+            }
 
             .pokemon-image {
                 width: 200px;
@@ -207,43 +422,140 @@
                 padding: 15px;
                 font-size: 1rem;
             }
+            
+            .pokemon-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎮 Pokemon Name Quiz</h1>
+            <h1>🎮 Pokemon Hub</h1>
         </div>
 
-        <div class="score-board">
-            <div class="score-item">
-                <div class="score-label">Correct</div>
-                <div class="score-value correct" id="correctScore">0</div>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('quiz')">Quiz Game</button>
+            <button class="tab-btn" onclick="switchTab('database')">Pokemon Database</button>
+        </div>
+
+        <!-- Quiz Tab -->
+        <div id="quizTab" class="tab-content active">
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">Correct</div>
+                    <div class="score-value correct" id="correctScore">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Incorrect</div>
+                    <div class="score-value incorrect" id="incorrectScore">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Streak</div>
+                    <div class="score-value" id="streakScore">0</div>
+                </div>
             </div>
-            <div class="score-item">
-                <div class="score-label">Incorrect</div>
-                <div class="score-value incorrect" id="incorrectScore">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">Streak</div>
-                <div class="score-value" id="streakScore">0</div>
+
+            <div class="quiz-area" id="quizArea">
+                <div class="loading">Loading Pokemon...</div>
             </div>
         </div>
 
-        <div class="quiz-area" id="quizArea">
-            <div class="loading">Loading Pokemon...</div>
+        <!-- Database Tab -->
+        <div id="databaseTab" class="tab-content">
+            <div class="database-controls">
+                <div class="filter-section">
+                    <label>Search:</label>
+                    <input type="text" id="searchInput" placeholder="Search by name or ID..." onkeyup="filterPokemon()">
+                </div>
+                
+                <div class="filter-section">
+                    <label>Type:</label>
+                    <select id="typeFilter" onchange="filterPokemon()">
+                        <option value="">All Types</option>
+                        <option value="normal">Normal</option>
+                        <option value="fire">Fire</option>
+                        <option value="water">Water</option>
+                        <option value="electric">Electric</option>
+                        <option value="grass">Grass</option>
+                        <option value="ice">Ice</option>
+                        <option value="fighting">Fighting</option>
+                        <option value="poison">Poison</option>
+                        <option value="ground">Ground</option>
+                        <option value="flying">Flying</option>
+                        <option value="psychic">Psychic</option>
+                        <option value="bug">Bug</option>
+                        <option value="rock">Rock</option>
+                        <option value="ghost">Ghost</option>
+                        <option value="dragon">Dragon</option>
+                        <option value="dark">Dark</option>
+                        <option value="steel">Steel</option>
+                        <option value="fairy">Fairy</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label>Sort By:</label>
+                    <select id="sortBy" onchange="sortPokemon()">
+                        <option value="id">ID (Low to High)</option>
+                        <option value="id-desc">ID (High to Low)</option>
+                        <option value="name">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="hp">HP</option>
+                        <option value="attack">Attack</option>
+                        <option value="defense">Defense</option>
+                        <option value="speed">Speed</option>
+                    </select>
+                </div>
+
+                <button class="load-btn" onclick="loadDatabase()">Load Pokemon Database</button>
+            </div>
+
+            <div id="databaseStatus" class="database-status"></div>
+            
+            <div id="pokemonGrid" class="pokemon-grid">
+                <p class="empty-state">Click "Load Pokemon Database" to begin</p>
+            </div>
         </div>
     </div>
 
     <script>
+        // Quiz variables
         let correctCount = 0;
         let incorrectCount = 0;
         let currentStreak = 0;
         let currentPokemon = null;
         let answered = false;
 
-        const MAX_POKEMON = 898;
+        // Database variables
+        let allPokemon = [];
+        let filteredPokemon = [];
+        let isLoadingDatabase = false;
+
+        const MAX_POKEMON = 151; // Start with Gen 1 for faster loading
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            if (tabName === 'quiz') {
+                document.getElementById('quizTab').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else if (tabName === 'database') {
+                document.getElementById('databaseTab').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            }
+        }
 
         // Hilarious fake Pokemon names
         const funnyNames = [
@@ -291,21 +603,13 @@
             }
         }
 
-        // Get random items from array
-        function getRandomItems(arr, count) {
-            const shuffled = [...arr].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
-        }
-
-        // Generate answer options
+        // Generate answer options for quiz
         async function generateOptions(correctPokemon) {
             const options = [correctPokemon.name];
             
-            // Add 1 funny fake name
             const funnyName = funnyNames[Math.floor(Math.random() * funnyNames.length)];
             options.push(funnyName);
             
-            // Add 2 real Pokemon names (different from the correct one)
             while (options.length < 4) {
                 const randomId = getRandomPokemonId();
                 const randomPokemon = await fetchPokemon(randomId);
@@ -314,18 +618,17 @@
                 }
             }
             
-            // Shuffle options
             return options.sort(() => 0.5 - Math.random());
         }
 
-        // Update score display
+        // Update quiz scores
         function updateScores() {
             document.getElementById('correctScore').textContent = correctCount;
             document.getElementById('incorrectScore').textContent = incorrectCount;
             document.getElementById('streakScore').textContent = currentStreak;
         }
 
-        // Handle answer selection
+        // Handle quiz answer selection
         function selectAnswer(selectedName, button) {
             if (answered) return;
             answered = true;
@@ -347,7 +650,6 @@
                 incorrectCount++;
                 currentStreak = 0;
                 
-                // Highlight the correct answer
                 buttons.forEach(btn => {
                     if (btn.textContent === currentPokemon.name) {
                         btn.classList.add('correct');
@@ -362,7 +664,7 @@
             document.getElementById('nextBtn').disabled = false;
         }
 
-        // Load new question
+        // Load new quiz question
         async function loadQuestion() {
             answered = false;
             const quizArea = document.getElementById('quizArea');
@@ -404,7 +706,141 @@
             `;
         }
 
-        // Initialize game
+        // DATABASE FUNCTIONS
+
+        // Load Pokemon database
+        async function loadDatabase() {
+            if (isLoadingDatabase) return;
+            
+            isLoadingDatabase = true;
+            const loadBtn = document.querySelector('.load-btn');
+            loadBtn.disabled = true;
+            loadBtn.textContent = 'Loading...';
+            
+            const status = document.getElementById('databaseStatus');
+            const grid = document.getElementById('pokemonGrid');
+            
+            allPokemon = [];
+            grid.innerHTML = '<p class="empty-state">Loading Pokemon data...</p>';
+            
+            // Load Pokemon in batches
+            const batchSize = 20;
+            for (let i = 1; i <= MAX_POKEMON; i += batchSize) {
+                const promises = [];
+                for (let j = i; j < i + batchSize && j <= MAX_POKEMON; j++) {
+                    promises.push(fetchPokemon(j));
+                }
+                
+                const batch = await Promise.all(promises);
+                allPokemon.push(...batch.filter(p => p !== null));
+                
+                status.textContent = `Loaded ${allPokemon.length} / ${MAX_POKEMON} Pokemon...`;
+            }
+            
+            filteredPokemon = [...allPokemon];
+            displayPokemon(filteredPokemon);
+            
+            status.textContent = `Database loaded: ${allPokemon.length} Pokemon`;
+            loadBtn.textContent = 'Reload Database';
+            loadBtn.disabled = false;
+            isLoadingDatabase = false;
+        }
+
+        // Display Pokemon in grid
+        function displayPokemon(pokemonList) {
+            const grid = document.getElementById('pokemonGrid');
+            
+            if (pokemonList.length === 0) {
+                grid.innerHTML = '<p class="empty-state">No Pokemon found</p>';
+                return;
+            }
+            
+            grid.innerHTML = pokemonList.map(pokemon => {
+                const types = pokemon.types.map(t => 
+                    `<span class="type-badge type-${t.type.name}">${t.type.name}</span>`
+                ).join('');
+                
+                const stats = pokemon.stats;
+                const hp = stats.find(s => s.stat.name === 'hp')?.base_stat || 0;
+                const attack = stats.find(s => s.stat.name === 'attack')?.base_stat || 0;
+                const defense = stats.find(s => s.stat.name === 'defense')?.base_stat || 0;
+                const speed = stats.find(s => s.stat.name === 'speed')?.base_stat || 0;
+                
+                return `
+                    <div class="pokemon-card-small">
+                        <img src="${pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default}" 
+                             alt="${pokemon.name}">
+                        <div class="name">${pokemon.name}</div>
+                        <div class="id">#${String(pokemon.id).padStart(3, '0')}</div>
+                        <div class="types">${types}</div>
+                        <div class="stats">
+                            <div class="stat-row"><span>HP:</span><span>${hp}</span></div>
+                            <div class="stat-row"><span>ATK:</span><span>${attack}</span></div>
+                            <div class="stat-row"><span>DEF:</span><span>${defense}</span></div>
+                            <div class="stat-row"><span>SPD:</span><span>${speed}</span></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter Pokemon
+        function filterPokemon() {
+            if (allPokemon.length === 0) return;
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            
+            filteredPokemon = allPokemon.filter(pokemon => {
+                const matchesSearch = pokemon.name.includes(searchTerm) || 
+                                     pokemon.id.toString().includes(searchTerm);
+                
+                const matchesType = !typeFilter || 
+                                   pokemon.types.some(t => t.type.name === typeFilter);
+                
+                return matchesSearch && matchesType;
+            });
+            
+            sortPokemon();
+        }
+
+        // Sort Pokemon
+        function sortPokemon() {
+            if (filteredPokemon.length === 0) return;
+            
+            const sortBy = document.getElementById('sortBy').value;
+            
+            filteredPokemon.sort((a, b) => {
+                switch(sortBy) {
+                    case 'id':
+                        return a.id - b.id;
+                    case 'id-desc':
+                        return b.id - a.id;
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'name-desc':
+                        return b.name.localeCompare(a.name);
+                    case 'hp':
+                        return b.stats.find(s => s.stat.name === 'hp').base_stat - 
+                               a.stats.find(s => s.stat.name === 'hp').base_stat;
+                    case 'attack':
+                        return b.stats.find(s => s.stat.name === 'attack').base_stat - 
+                               a.stats.find(s => s.stat.name === 'attack').base_stat;
+                    case 'defense':
+                        return b.stats.find(s => s.stat.name === 'defense').base_stat - 
+                               a.stats.find(s => s.stat.name === 'defense').base_stat;
+                    case 'speed':
+                        return b.stats.find(s => s.stat.name === 'speed').base_stat - 
+                               a.stats.find(s => s.stat.name === 'speed').base_stat;
+                    default:
+                        return 0;
+                }
+            });
+            
+            displayPokemon(filteredPokemon);
+        }
+
+        // Initialize quiz on page load
         loadQuestion();
     </script>
 </body>
