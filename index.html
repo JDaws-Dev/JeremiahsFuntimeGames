@@ -1,190 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jeremiah's Funtime Games — Neon Snake</title>
-  <style>
-    :root{
-      --bg:#0b0033;
-      --accent:#00fff2;
-      --accent2:#ff00d0;
-      --text:#ffffff;
-    }
-    body{
-      margin:0; background: radial-gradient(circle at 50% 50%, #210066, var(--bg));
-      color:var(--text); font-family: 'Trebuchet MS', sans-serif;
-      display:flex; align-items:center; justify-content:center; flex-direction:column; height:100vh;
-    }
-    h1{
-      text-shadow:0 0 20px var(--accent),0 0 40px var(--accent2);
-      font-size:2.5rem;
-    }
-    canvas{
-      border:2px solid var(--accent);
-      box-shadow:0 0 25px var(--accent2);
-      background: radial-gradient(circle at 50% 50%, #1a003d, #0b0033);
-    }
-    #scoreboard{margin-top:10px;}
-    #bestscore{margin-top:5px; opacity:0.9;}
-    button{
-      background:var(--accent2);
-      color:var(--text);
-      border:none;
-      border-radius:10px;
-      padding:10px 20px;
-      font-size:1rem;
-      cursor:pointer;
-      box-shadow:0 0 10px var(--accent2);
-      margin:5px;
-    }
-    button:hover{box-shadow:0 0 20px var(--accent);}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon: This or That</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: #f0f0f0;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .battle-area {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        .pokemon-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            min-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pokemon-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .pokemon-card.loading {
+            cursor: wait;
+            opacity: 0.7;
+        }
+
+        .pokemon-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .pokemon-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            text-transform: capitalize;
+            margin-bottom: 10px;
+        }
+
+        .pokemon-id {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .pokemon-types {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .type-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .vs-text {
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            align-self: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .loading-spinner {
+            color: white;
+            font-size: 1.5rem;
+            margin: 20px;
+        }
+
+        /* Pokemon type colors */
+        .type-normal { background-color: #A8A878; }
+        .type-fire { background-color: #F08030; }
+        .type-water { background-color: #6890F0; }
+        .type-electric { background-color: #F8D030; }
+        .type-grass { background-color: #78C850; }
+        .type-ice { background-color: #98D8D8; }
+        .type-fighting { background-color: #C03028; }
+        .type-poison { background-color: #A040A0; }
+        .type-ground { background-color: #E0C068; }
+        .type-flying { background-color: #A890F0; }
+        .type-psychic { background-color: #F85888; }
+        .type-bug { background-color: #A8B820; }
+        .type-rock { background-color: #B8A038; }
+        .type-ghost { background-color: #705898; }
+        .type-dragon { background-color: #7038F8; }
+        .type-dark { background-color: #705848; }
+        .type-steel { background-color: #B8B8D0; }
+        .type-fairy { background-color: #EE99AC; }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .vs-text {
+                font-size: 2rem;
+            }
+            .pokemon-card {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Jeremiah's Funtime Games</h1>
-  <canvas id="game" width="400" height="400"></canvas>
-  <div id="scoreboard">Score: <span id="score">0</span></div>
-  <div id="bestscore">High Score: <span id="best">0</span></div>
-  <div>
-    <button id="start">Start</button>
-    <button id="pause">Pause</button>
-    <button id="toggleSFX">SFX: ON</button>
-  </div>
+    <div class="container">
+        <h1>⚡ Pokemon: This or That ⚡</h1>
+        <p class="subtitle">Click on your favorite Pokemon!</p>
+        
+        <div class="stats">
+            <p>Battles Completed: <strong id="battleCount">0</strong></p>
+        </div>
 
-  <script>
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    const scoreEl = document.getElementById('score');
-    const bestEl = document.getElementById('best');
-    const startBtn = document.getElementById('start');
-    const pauseBtn = document.getElementById('pause');
-    const sfxBtn = document.getElementById('toggleSFX');
+        <div class="battle-area" id="battleArea">
+            <div class="loading-spinner">Loading Pokemon...</div>
+        </div>
+    </div>
 
-    let box = 20;
-    let snake;
-    let direction;
-    let food;
-    let score;
-    let best = Number(localStorage.getItem('neon_snake_best') || 0);
-    bestEl.textContent = best;
-    let game;
-    let paused = false;
-    let sfxEnabled = true;
+    <script>
+        let battleCount = 0;
+        const MAX_POKEMON = 898; // Gen 1-8 Pokemon
 
-    const eatSound = new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg');
-    const crashSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
-    const moveSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
-
-    function playSound(sound){
-      if(!sfxEnabled) return;
-      sound.currentTime=0;
-      sound.play();
-    }
-
-    function reset(){
-      snake = [{x:10*box, y:10*box}];
-      direction = 'RIGHT';
-      food = {
-        x: Math.floor(Math.random()*20)*box,
-        y: Math.floor(Math.random()*20)*box
-      };
-      score = 0;
-      scoreEl.textContent = score;
-    }
-
-    function draw(){
-      ctx.fillStyle = '#10004f';
-      ctx.fillRect(0,0,400,400);
-
-      for(let i=0;i<snake.length;i++){
-        ctx.fillStyle = i==0 ? '#00fff2' : '#ff00d0';
-        ctx.shadowBlur=15;
-        ctx.shadowColor=i==0?'#00fff2':'#ff00d0';
-        ctx.fillRect(snake[i].x,snake[i].y,box,box);
-      }
-
-      ctx.fillStyle = '#ffff00';
-      ctx.shadowBlur=20;
-      ctx.shadowColor='#ffff00';
-      ctx.fillRect(food.x, food.y, box, box);
-
-      let snakeX = snake[0].x;
-      let snakeY = snake[0].y;
-
-      if(direction=='LEFT') snakeX -= box;
-      if(direction=='UP') snakeY -= box;
-      if(direction=='RIGHT') snakeX += box;
-      if(direction=='DOWN') snakeY += box;
-
-      if(snakeX == food.x && snakeY == food.y){
-        score++;
-        scoreEl.textContent = score;
-        playSound(eatSound);
-        food = {
-          x: Math.floor(Math.random()*20)*box,
-          y: Math.floor(Math.random()*20)*box
-        };
-      } else {
-        snake.pop();
-      }
-
-      let newHead = {x:snakeX, y:snakeY};
-
-      if(snakeX<0 || snakeY<0 || snakeX>=400 || snakeY>=400 || collision(newHead,snake)){
-        clearInterval(game);
-        playSound(crashSound);
-        if(score > best){
-          best = score;
-          localStorage.setItem('neon_snake_best', best);
-          bestEl.textContent = best;
+        // Get random Pokemon ID
+        function getRandomPokemonId() {
+            return Math.floor(Math.random() * MAX_POKEMON) + 1;
         }
-        alert('Game Over! Your score: ' + score);
-        reset();
-        return;
-      }
 
-      snake.unshift(newHead);
-    }
+        // Fetch Pokemon data from PokeAPI
+        async function fetchPokemon(id) {
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+                if (!response.ok) throw new Error('Pokemon not found');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching Pokemon:', error);
+                return null;
+            }
+        }
 
-    function collision(head, array){
-      for(let i=0;i<array.length;i++){
-        if(head.x==array[i].x && head.y==array[i].y){return true;}
-      }
-      return false;
-    }
+        // Create Pokemon card HTML
+        function createPokemonCard(pokemon) {
+            const card = document.createElement('div');
+            card.className = 'pokemon-card';
+            card.onclick = () => selectPokemon(pokemon.name);
 
-    document.addEventListener('keydown', e=>{
-      if(e.key==='ArrowLeft' && direction!='RIGHT'){direction='LEFT'; playSound(moveSound);}
-      else if(e.key==='ArrowUp' && direction!='DOWN'){direction='UP'; playSound(moveSound);}
-      else if(e.key==='ArrowRight' && direction!='LEFT'){direction='RIGHT'; playSound(moveSound);}
-      else if(e.key==='ArrowDown' && direction!='UP'){direction='DOWN'; playSound(moveSound);}
-    });
+            const types = pokemon.types.map(typeInfo => 
+                `<span class="type-badge type-${typeInfo.type.name}">${typeInfo.type.name}</span>`
+            ).join('');
 
-    startBtn.onclick=()=>{
-      clearInterval(game);
-      reset();
-      game=setInterval(draw,100);
-    };
+            card.innerHTML = `
+                <img src="${pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default}" 
+                     alt="${pokemon.name}" 
+                     class="pokemon-image">
+                <div class="pokemon-name">${pokemon.name}</div>
+                <div class="pokemon-id">#${String(pokemon.id).padStart(3, '0')}</div>
+                <div class="pokemon-types">${types}</div>
+            `;
 
-    pauseBtn.onclick=()=>{
-      if(!paused){
-        clearInterval(game);
-        paused=true;
-        pauseBtn.textContent='Resume';
-      } else {
-        game=setInterval(draw,100);
-        paused=false;
-        pauseBtn.textContent='Pause';
-      }
-    };
+            return card;
+        }
 
-    sfxBtn.onclick=()=>{
-      sfxEnabled=!sfxEnabled;
-      sfxBtn.textContent = sfxEnabled ? 'SFX: ON' : 'SFX: OFF';
-    };
+        // Handle Pokemon selection
+        function selectPokemon(name) {
+            battleCount++;
+            document.getElementById('battleCount').textContent = battleCount;
+            
+            // Add a brief visual feedback
+            const cards = document.querySelectorAll('.pokemon-card');
+            cards.forEach(card => card.style.pointerEvents = 'none');
+            
+            setTimeout(() => {
+                loadNewBattle();
+            }, 300);
+        }
 
-    reset();
-  </script>
+        // Load a new battle with two random Pokemon
+        async function loadNewBattle() {
+            const battleArea = document.getElementById('battleArea');
+            battleArea.innerHTML = '<div class="loading-spinner">Loading Pokemon...</div>';
+
+            // Get two different random Pokemon
+            let id1 = getRandomPokemonId();
+            let id2 = getRandomPokemonId();
+            while (id1 === id2) {
+                id2 = getRandomPokemonId();
+            }
+
+            // Fetch both Pokemon concurrently
+            const [pokemon1, pokemon2] = await Promise.all([
+                fetchPokemon(id1),
+                fetchPokemon(id2)
+            ]);
+
+            // Clear and create new battle
+            battleArea.innerHTML = '';
+            
+            if (pokemon1 && pokemon2) {
+                battleArea.appendChild(createPokemonCard(pokemon1));
+                
+                const vsText = document.createElement('div');
+                vsText.className = 'vs-text';
+                vsText.textContent = 'VS';
+                battleArea.appendChild(vsText);
+                
+                battleArea.appendChild(createPokemonCard(pokemon2));
+            } else {
+                battleArea.innerHTML = '<div class="loading-spinner">Error loading Pokemon. Retrying...</div>';
+                setTimeout(loadNewBattle, 1000);
+            }
+        }
+
+        // Initialize the game
+        loadNewBattle();
+    </script>
 </body>
 </html>
