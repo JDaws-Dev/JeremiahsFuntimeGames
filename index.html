@@ -300,12 +300,26 @@
         let pokemonData = [];
         let selectedPokemon = null;
 
-        // Load Pokemon data from PokeAPI
+        // Load Pokemon data from PokeAPI (with caching)
         async function loadPokemon() {
             const grid = document.getElementById('pokemonGrid');
             grid.innerHTML = '<div class="loading">Loading the most powerful Pokemon...</div>';
             
             try {
+                // Check if we have cached data (expires after 24 hours)
+                const cachedData = localStorage.getItem('pokemonData');
+                const cacheTime = localStorage.getItem('pokemonCacheTime');
+                const now = Date.now();
+                
+                if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 86400000) {
+                    // Use cached data (less than 24 hours old)
+                    pokemonData = JSON.parse(cachedData);
+                    displayPokemon();
+                    populateSelect();
+                    return;
+                }
+                
+                // Fetch fresh data
                 const promises = TOP_POKEMON_IDS.map(id => 
                     fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(r => r.json())
                 );
@@ -323,6 +337,10 @@
                         types: pokemon.types.map(t => t.type.name)
                     };
                 }).sort((a, b) => b.totalStats - a.totalStats);
+
+                // Cache the data
+                localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
+                localStorage.setItem('pokemonCacheTime', now.toString());
 
                 displayPokemon();
                 populateSelect();
@@ -475,11 +493,12 @@
 
         // Initialize
         window.onload = function() {
-            loadPokemon();
-            loadMessages();
+            // Load Pokemon and messages in parallel (don't wait for one to finish)
+            loadPokemon().catch(console.error);
+            loadMessages().catch(console.error);
             
             // Auto-update messages every 30 seconds
-            setInterval(loadMessages, 30000);
+            setInterval(() => loadMessages().catch(console.error), 30000);
         };
 
         // Update select dropdown
