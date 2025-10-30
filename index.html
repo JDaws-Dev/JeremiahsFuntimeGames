@@ -236,6 +236,11 @@
             border-radius: 3px;
             font-family: monospace;
         }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -299,6 +304,7 @@
 
         let pokemonData = [];
         let selectedPokemon = null;
+        let replyingTo = null;
 
         // Load Pokemon data from PokeAPI (with caching)
         async function loadPokemon() {
@@ -415,6 +421,15 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Posting...';
 
+            const messageData = {
+                action: 'post',
+                pokemon: pokemon,
+                author: author,
+                message: message,
+                timestamp: new Date().toISOString(),
+                replyTo: replyingTo || ''
+            };
+
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -422,31 +437,40 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        action: 'post',
-                        pokemon: pokemon,
-                        author: author,
-                        message: message,
-                        timestamp: new Date().toISOString()
-                    })
+                    body: JSON.stringify(messageData)
                 });
 
-                // With no-cors, we can't read the response, so we just assume success
+                // Clear form
                 document.getElementById('messageText').value = '';
-                alert('Message posted successfully!');
+                
+                // Clear reply state
+                if (replyingTo) {
+                    cancelReply();
+                }
+                
+                // Clear cache to force fresh load
+                localStorage.removeItem('messagesCache');
+                localStorage.removeItem('messagesCacheTime');
+                
+                // Show success briefly
+                submitBtn.textContent = '✓ Posted!';
                 
                 // Reload messages after a short delay
-                setTimeout(loadMessages, 1000);
+                setTimeout(() => {
+                    loadMessages();
+                }, 500);
             } catch (error) {
                 console.error('Error posting message:', error);
                 alert('Failed to post message. Please try again.');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Post Message';
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Post Message';
+                }, 1000);
             }
         }
 
-        // Load messages from Google Sheet
+        // Load messages from Google Sheet (with caching)
         async function loadMessages() {
             const container = document.getElementById('messagesContainer');
             
@@ -455,7 +479,22 @@
                 return;
             }
 
-            container.innerHTML = '<div class="loading">Loading messages...</div>';
+            // Check cache first (30 seconds)
+            const cachedMessages = localStorage.getItem('messagesCache');
+            const cacheTime = localStorage.getItem('messagesCacheTime');
+            const now = Date.now();
+            
+            if (cachedMessages && cacheTime && (now - parseInt(cacheTime)) < 30000) {
+                displayMessages(JSON.parse(cachedMessages));
+                return;
+            }
+
+            // Show minimal loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading';
+            loadingDiv.textContent = '⟳';
+            loadingDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #667eea; color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.9em; z-index: 1000; animation: spin 1s linear infinite;';
+            document.body.appendChild(loadingDiv);
 
             try {
                 const pokemon = selectedPokemon || '';
@@ -463,25 +502,113 @@
                 const data = await response.json();
 
                 if (data.messages && data.messages.length > 0) {
-                    container.innerHTML = data.messages.map(msg => `
-                        <div class="message">
-                            <div class="message-header">
-                                <span class="message-author">${escapeHtml(msg.author)}</span>
-                                <span class="message-pokemon">${escapeHtml(msg.pokemon)}</span>
-                            </div>
-                            <div class="message-content">${escapeHtml(msg.message)}</div>
-                            <div style="font-size: 0.8em; color: #999; margin-top: 8px;">
-                                ${new Date(msg.timestamp).toLocaleString()}
-                            </div>
-                        </div>
-                    `).join('');
+                    // Cache the messages
+                    localStorage.setItem('messagesCache', JSON.stringify(data.messages));
+                    localStorage.setItem('messagesCacheTime', now.toString());
+                    
+                    displayMessages(data.messages);
                 } else {
                     container.innerHTML = '<div class="loading">No messages yet. Be the first to post!</div>';
                 }
             } catch (error) {
                 console.error('Error loading messages:', error);
                 container.innerHTML = '<div class="error">Failed to load messages. Make sure your Google Sheet is configured correctly.</div>';
+            } finally {
+                document.body.removeChild(loadingDiv);
             }
+        }
+
+        // Display messages with threading
+        function displayMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            
+            // Organize messages by thread
+            const messageMap = new Map();
+            const rootMessages = [];
+            
+            messages.forEach(msg => {
+                const id = msg.id || msg.timestamp; // Use ID if available, fallback to timestamp
+                msg.id = id;
+                msg.replies = [];
+                messageMap.set(id, msg);
+                
+                if (!msg.replyTo) {
+                    rootMessages.push(msg);
+                }
+            });
+            
+            // Build reply threads
+            messages.forEach(msg => {
+                if (msg.replyTo && messageMap.has(msg.replyTo)) {
+                    messageMap.get(msg.replyTo).replies.push(msg);
+                }
+            });
+            
+            // Render messages
+            container.innerHTML = rootMessages.map(msg => renderMessage(msg, 0)).join('');
+        }
+
+        // Render a single message with its replies
+        function renderMessage(msg, depth) {
+            const indent = depth * 20;
+            const borderColor = depth > 0 ? '#ddd' : '#667eea';
+            
+            let html = `
+                <div class="message" style="margin-left: ${indent}px; border-left-color: ${borderColor};" data-id="${msg.id}">
+                    <div class="message-header">
+                        <span class="message-author">${escapeHtml(msg.author)}</span>
+                        <span class="message-pokemon">${escapeHtml(msg.pokemon)}</span>
+                    </div>
+                    <div class="message-content">${escapeHtml(msg.message)}</div>
+                    <div style="font-size: 0.8em; color: #999; margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>${new Date(msg.timestamp).toLocaleString()}</span>
+                        <button onclick="replyToMessage('${msg.id}', '${escapeHtml(msg.author)}')" style="background: #f0f4ff; border: 1px solid #667eea; color: #667eea; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            💬 Reply
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add replies recursively
+            if (msg.replies && msg.replies.length > 0) {
+                msg.replies.forEach(reply => {
+                    html += renderMessage(reply, depth + 1);
+                });
+            }
+            
+            return html;
+        }
+
+        // Reply to a message
+        function replyToMessage(messageId, authorName) {
+            replyingTo = messageId;
+            const messageText = document.getElementById('messageText');
+            messageText.focus();
+            messageText.placeholder = `Replying to ${authorName}... (Click cancel to remove)`;
+            
+            // Show reply indicator
+            const form = document.querySelector('.message-form');
+            let indicator = document.getElementById('replyIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'replyIndicator';
+                indicator.style.cssText = 'background: #f0f4ff; border-left: 3px solid #667eea; padding: 10px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;';
+                form.insertBefore(indicator, form.firstChild);
+            }
+            indicator.innerHTML = `
+                <span style="color: #667eea; font-size: 0.9em;">💬 Replying to ${escapeHtml(authorName)}</span>
+                <button onclick="cancelReply()" style="background: none; border: none; color: #999; cursor: pointer; font-size: 1.2em;">✕</button>
+            `;
+        }
+
+        // Cancel reply
+        function cancelReply() {
+            replyingTo = null;
+            const indicator = document.getElementById('replyIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+            document.getElementById('messageText').placeholder = 'Share your thoughts about this Pokemon...';
         }
 
         // Escape HTML to prevent XSS
