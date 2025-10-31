@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top 10 Powerful Pokemon Message Board</title>
+    <title>Star Wars: A New Hope Message Board</title>
     <style>
         * {
             margin: 0;
@@ -12,96 +13,45 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+            color: #fff;
             padding: 20px;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
         }
 
         header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 30px;
             text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 2px solid #ffd700;
         }
 
         h1 {
+            color: #ffd700;
             font-size: 2.5em;
+            text-shadow: 0 0 10px #ffd700;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .subtitle {
-            font-size: 1.1em;
-            opacity: 0.9;
+            color: #aaa;
+            font-style: italic;
         }
 
-        .pokemon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 30px;
-            background: #f8f9fa;
-        }
-
-        .pokemon-card {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
-
-        .pokemon-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
-        }
-
-        .pokemon-card.selected {
-            border: 3px solid #667eea;
-            background: #f0f4ff;
-        }
-
-        .pokemon-img {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto;
-        }
-
-        .pokemon-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin: 10px 0;
-            text-transform: capitalize;
-            color: #333;
-        }
-
-        .pokemon-stats {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .message-section {
-            padding: 30px;
-        }
-
-        .message-form {
-            background: #f8f9fa;
-            padding: 20px;
+        .post-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
             border-radius: 10px;
             margin-bottom: 30px;
+            border: 1px solid #444;
         }
 
         .form-group {
@@ -111,157 +61,186 @@
         label {
             display: block;
             margin-bottom: 5px;
+            color: #ffd700;
             font-weight: bold;
-            color: #333;
         }
 
-        input, textarea {
+        input[type="text"],
+        textarea,
+        select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #555;
             border-radius: 5px;
-            font-size: 1em;
-            font-family: inherit;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
+            color: #fff;
+            font-size: 14px;
         }
 
         textarea {
-            min-height: 100px;
             resize: vertical;
+            min-height: 100px;
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #ffd700;
+            color: #000;
             padding: 12px 30px;
             border: none;
             border-radius: 5px;
-            font-size: 1em;
-            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
         }
 
         button:hover {
-            transform: scale(1.05);
+            background: #ffed4e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
         }
 
         button:disabled {
-            opacity: 0.5;
+            background: #666;
             cursor: not-allowed;
             transform: none;
         }
 
-        .messages-container {
+        .messages {
             margin-top: 30px;
         }
 
-        .message {
-            background: white;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .message-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+            position: relative;
         }
 
         .message-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-            color: #666;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
         }
 
-        .message-author {
+        .character-tag {
+            background: #ffd700;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
             font-weight: bold;
-            color: #667eea;
+            font-size: 14px;
         }
 
-        .message-pokemon {
-            background: #f0f4ff;
-            padding: 2px 8px;
-            border-radius: 3px;
-            text-transform: capitalize;
+        .timestamp {
+            color: #888;
+            font-size: 12px;
         }
 
         .message-content {
-            color: #333;
+            margin: 15px 0;
             line-height: 1.6;
+        }
+
+        .author {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .reply-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+
+        .reply-form {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+
+        .replies {
+            margin-top: 15px;
+        }
+
+        .reply-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            margin-top: 10px;
+            margin-left: 30px;
+            border-radius: 5px;
+            border-left: 3px solid #666;
+        }
+
+        .reply-btn {
+            background: transparent;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+
+        .reply-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
         }
 
         .loading {
             text-align: center;
-            padding: 20px;
-            color: #666;
+            padding: 40px;
+            color: #ffd700;
+            font-size: 18px;
         }
 
         .error {
-            background: #fee;
-            color: #c33;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #f00;
             padding: 15px;
             border-radius: 5px;
-            margin: 20px;
+            margin: 20px 0;
+            color: #ff6b6b;
         }
 
-        .setup-instructions {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px;
-        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
 
-        .setup-instructions h3 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
+            .message-card {
+                padding: 15px;
+            }
 
-        .setup-instructions ol {
-            margin-left: 20px;
-            color: #856404;
-        }
-
-        .setup-instructions li {
-            margin-bottom: 8px;
-        }
-
-        .setup-instructions code {
-            background: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            .reply-card {
+                margin-left: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>⚡ Top 10 Powerful Pokemon Message Board ⚡</h1>
-            <p class="subtitle">Discuss the mightiest Pokemon in the universe!</p>
+            <h1>⭐ Star Wars: A New Hope Message Board ⭐</h1>
+            <p class="subtitle">Discuss your favorite characters from the original trilogy</p>
         </header>
 
-        <div class="pokemon-grid" id="pokemonGrid">
-            <div class="loading">Loading the most powerful Pokemon...</div>
-        </div>
-
-        <div class="message-section">
-            <h2 style="margin-bottom: 20px; color: #333;">💬 Message Board</h2>
-            
-            <div class="message-form">
+        <div class="post-form">
+            <h2 style="margin-bottom: 20px; color: #ffd700;">Create New Post</h2>
+            <form id="postForm">
                 <div class="form-group">
-                    <label for="pokemonSelect">Select Pokemon:</label>
-                    <select id="pokemonSelect" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 1em;">
-                        <option value="">Choose a Pokemon...</option>
+                    <label for="characterSelect">Select Character:</label>
+                    <select id="characterSelect" required>
+                        <option value="">Loading characters...</option>
                     </select>
                 </div>
 
@@ -271,149 +250,148 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="messageText">Message:</label>
-                    <textarea id="messageText" placeholder="Share your thoughts about this Pokemon..." required></textarea>
+                    <label for="messageText">Your Message:</label>
+                    <textarea id="messageText" placeholder="Share your thoughts about this character..." required></textarea>
                 </div>
 
-                <button onclick="postMessage()" id="submitBtn">Post Message</button>
-            </div>
+                <button type="submit" id="submitBtn">Post Message</button>
+            </form>
+        </div>
 
-            <div class="messages-container" id="messagesContainer">
+        <div class="messages">
+            <h2 style="margin-bottom: 20px; color: #ffd700;">Recent Posts</h2>
+            <div id="messagesContainer">
                 <div class="loading">Loading messages...</div>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURATION - Replace with your Google Apps Script Web App URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKf1FcFDoifu-EVzmf3ipxxRgGRuY0m9fVmlzjNN_agey2XbnAmRK9XBuN4Ub7yRGRsw/exec';
-        
-        // Top 10 Pokemon by base stat total (these are considered the most powerful)
-        const TOP_POKEMON_IDS = [
-            150, // Mewtwo
-            384, // Rayquaza
-            249, // Lugia
-            250, // Ho-Oh
-            383, // Groudon
-            382, // Kyogre
-            483, // Dialga
-            484, // Palkia
-            487, // Giratina
-            144  // Articuno
-        ];
+        let characters = [];
+        let messages = [];
 
-        let pokemonData = [];
-        let selectedPokemon = null;
-        let replyingTo = null;
-
-        // Load Pokemon data from PokeAPI (with caching)
-        async function loadPokemon() {
-            const grid = document.getElementById('pokemonGrid');
-            grid.innerHTML = '<div class="loading">Loading the most powerful Pokemon...</div>';
-            
+        // Load characters from SWAPI
+        async function loadCharacters() {
             try {
-                // Check if we have cached data (expires after 24 hours)
-                const cachedData = localStorage.getItem('pokemonData');
-                const cacheTime = localStorage.getItem('pokemonCacheTime');
-                const now = Date.now();
-                
-                if (cachedData && cacheTime && (now - parseInt(cacheTime)) < 86400000) {
-                    // Use cached data (less than 24 hours old)
-                    pokemonData = JSON.parse(cachedData);
-                    displayPokemon();
-                    populateSelect();
-                    return;
-                }
-                
-                // Fetch fresh data
-                const promises = TOP_POKEMON_IDS.map(id => 
-                    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(r => r.json())
-                );
-                
-                const results = await Promise.all(promises);
-                
-                // Calculate total base stats and sort
-                pokemonData = results.map(pokemon => {
-                    const totalStats = pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0);
-                    return {
-                        id: pokemon.id,
-                        name: pokemon.name,
-                        sprite: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default,
-                        totalStats: totalStats,
-                        types: pokemon.types.map(t => t.type.name)
-                    };
-                }).sort((a, b) => b.totalStats - a.totalStats);
-
-                // Cache the data
-                localStorage.setItem('pokemonData', JSON.stringify(pokemonData));
-                localStorage.setItem('pokemonCacheTime', now.toString());
-
-                displayPokemon();
-                populateSelect();
+                google.script.run.withSuccessHandler(function(chars) {
+                    characters = chars;
+                    const select = document.getElementById('characterSelect');
+                    select.innerHTML = '<option value="">-- Select a character --</option>';
+                    
+                    chars.forEach(char => {
+                        const option = document.createElement('option');
+                        option.value = char.name;
+                        option.textContent = char.name;
+                        select.appendChild(option);
+                    });
+                }).withFailureHandler(showError).getCharacters();
             } catch (error) {
-                grid.innerHTML = '<div class="error">Failed to load Pokemon data. Please refresh the page.</div>';
-                console.error('Error loading Pokemon:', error);
+                showError(error);
             }
         }
 
-        // Display Pokemon cards
-        function displayPokemon() {
-            const grid = document.getElementById('pokemonGrid');
-            grid.innerHTML = pokemonData.map((pokemon, index) => `
-                <div class="pokemon-card" onclick="selectPokemon('${pokemon.name}')" data-pokemon="${pokemon.name}">
-                    <div style="font-size: 2em; color: gold;">
-                        ${index === 0 ? '👑' : `#${index + 1}`}
-                    </div>
-                    <img src="${pokemon.sprite}" alt="${pokemon.name}" class="pokemon-img">
-                    <div class="pokemon-name">${pokemon.name}</div>
-                    <div class="pokemon-stats">
-                        Base Stats: ${pokemon.totalStats}
-                    </div>
-                    <div style="margin-top: 5px; font-size: 0.8em;">
-                        ${pokemon.types.map(t => `<span style="background: #667eea; color: white; padding: 2px 6px; border-radius: 3px; margin: 2px; display: inline-block;">${t}</span>`).join('')}
-                    </div>
-                </div>
-            `).join('');
+        // Load messages from spreadsheet
+        function loadMessages() {
+            google.script.run.withSuccessHandler(function(msgs) {
+                messages = msgs;
+                displayMessages();
+            }).withFailureHandler(showError).getMessages();
         }
 
-        // Populate Pokemon select dropdown
-        function populateSelect() {
-            const select = document.getElementById('pokemonSelect');
-            select.innerHTML = '<option value="">Choose a Pokemon...</option>' +
-                pokemonData.map(p => `<option value="${p.name}">${p.name} (${p.totalStats})</option>`).join('');
-        }
-
-        // Select a Pokemon
-        function selectPokemon(name) {
-            selectedPokemon = name;
-            document.getElementById('pokemonSelect').value = name;
+        // Display messages
+        function displayMessages() {
+            const container = document.getElementById('messagesContainer');
             
-            // Update visual selection
-            document.querySelectorAll('.pokemon-card').forEach(card => {
-                if (card.dataset.pokemon === name) {
-                    card.classList.add('selected');
-                } else {
-                    card.classList.remove('selected');
-                }
-            });
-
-            // Filter messages
-            loadMessages();
-        }
-
-        // Post a new message
-        async function postMessage() {
-            const pokemon = document.getElementById('pokemonSelect').value;
-            const author = document.getElementById('authorName').value.trim();
-            const message = document.getElementById('messageText').value.trim();
-
-            if (!pokemon || !author || !message) {
-                alert('Please fill in all fields!');
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #888;">No messages yet. Be the first to post!</p>';
                 return;
             }
 
-            if (GOOGLE_SCRIPT_URL === 'PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE') {
-                alert('Please configure your Google Sheet first! Check the setup instructions.');
+            // Group messages by parent (main posts vs replies)
+            const mainPosts = messages.filter(m => !m.parentId);
+            
+            container.innerHTML = mainPosts.map(msg => {
+                const replies = messages.filter(m => m.parentId === msg.id);
+                
+                return `
+                    <div class="message-card">
+                        <div class="message-header">
+                            <span class="character-tag">${msg.character}</span>
+                            <span class="timestamp">${new Date(msg.timestamp).toLocaleString()}</span>
+                        </div>
+                        <div class="author">${msg.author}</div>
+                        <div class="message-content">${escapeHtml(msg.message)}</div>
+                        <div class="reply-section">
+                            <button class="reply-btn" onclick="toggleReplyForm('${msg.id}')">💬 Reply (${replies.length})</button>
+                            
+                            <div id="replyForm-${msg.id}" class="reply-form">
+                                <div class="form-group">
+                                    <input type="text" id="replyAuthor-${msg.id}" placeholder="Your name" style="margin-bottom: 10px;">
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="replyText-${msg.id}" placeholder="Write your reply..." style="min-height: 80px;"></textarea>
+                                </div>
+                                <button onclick="submitReply('${msg.id}', '${msg.character}')">Post Reply</button>
+                            </div>
+
+                            <div class="replies">
+                                ${replies.map(reply => `
+                                    <div class="reply-card">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                            <span class="author">${reply.author}</span>
+                                            <span class="timestamp">${new Date(reply.timestamp).toLocaleString()}</span>
+                                        </div>
+                                        <div>${escapeHtml(reply.message)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle reply form
+        function toggleReplyForm(messageId) {
+            const form = document.getElementById(`replyForm-${messageId}`);
+            form.classList.toggle('active');
+        }
+
+        // Submit reply
+        function submitReply(parentId, character) {
+            const author = document.getElementById(`replyAuthor-${parentId}`).value.trim();
+            const message = document.getElementById(`replyText-${parentId}`).value.trim();
+
+            if (!author || !message) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const replyData = {
+                character: character,
+                author: author,
+                message: message,
+                parentId: parentId
+            };
+
+            google.script.run.withSuccessHandler(function() {
+                document.getElementById(`replyAuthor-${parentId}`).value = '';
+                document.getElementById(`replyText-${parentId}`).value = '';
+                document.getElementById(`replyForm-${parentId}`).classList.remove('active');
+                loadMessages();
+            }).withFailureHandler(showError).saveMessage(replyData);
+        }
+
+        // Handle form submission
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const character = document.getElementById('characterSelect').value;
+            const author = document.getElementById('authorName').value.trim();
+            const message = document.getElementById('messageText').value.trim();
+
+            if (!character || !author || !message) {
+                alert('Please fill in all fields');
                 return;
             }
 
@@ -421,225 +399,46 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Posting...';
 
-            const messageData = {
-                action: 'post',
-                pokemon: pokemon,
+            const postData = {
+                character: character,
                 author: author,
                 message: message,
-                timestamp: new Date().toISOString(),
-                replyTo: replyingTo || ''
+                parentId: null
             };
 
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(messageData)
-                });
+            google.script.run.withSuccessHandler(function() {
+                document.getElementById('postForm').reset();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Message';
+                loadMessages();
+            }).withFailureHandler(function(error) {
+                showError(error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Message';
+            }).saveMessage(postData);
+        });
 
-                // Clear form
-                document.getElementById('messageText').value = '';
-                
-                // Clear reply state
-                if (replyingTo) {
-                    cancelReply();
-                }
-                
-                // Clear cache to force fresh load
-                localStorage.removeItem('messagesCache');
-                localStorage.removeItem('messagesCacheTime');
-                
-                // Show success briefly
-                submitBtn.textContent = '✓ Posted!';
-                
-                // Reload messages after a short delay
-                setTimeout(() => {
-                    loadMessages();
-                }, 500);
-            } catch (error) {
-                console.error('Error posting message:', error);
-                alert('Failed to post message. Please try again.');
-            } finally {
-                setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Post Message';
-                }, 1000);
-            }
-        }
-
-        // Load messages from Google Sheet (with caching)
-        async function loadMessages() {
-            const container = document.getElementById('messagesContainer');
-            
-            if (GOOGLE_SCRIPT_URL === 'PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE') {
-                container.innerHTML = '<div class="error">Please configure your Google Sheet URL to view messages.</div>';
-                return;
-            }
-
-            // Check cache first (30 seconds)
-            const cachedMessages = localStorage.getItem('messagesCache');
-            const cacheTime = localStorage.getItem('messagesCacheTime');
-            const now = Date.now();
-            
-            if (cachedMessages && cacheTime && (now - parseInt(cacheTime)) < 30000) {
-                displayMessages(JSON.parse(cachedMessages));
-                return;
-            }
-
-            // Show minimal loading indicator
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading';
-            loadingDiv.textContent = '⟳';
-            loadingDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #667eea; color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.9em; z-index: 1000; animation: spin 1s linear infinite;';
-            document.body.appendChild(loadingDiv);
-
-            try {
-                const pokemon = selectedPokemon || '';
-                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get&pokemon=${encodeURIComponent(pokemon)}`);
-                const data = await response.json();
-
-                if (data.messages && data.messages.length > 0) {
-                    // Cache the messages
-                    localStorage.setItem('messagesCache', JSON.stringify(data.messages));
-                    localStorage.setItem('messagesCacheTime', now.toString());
-                    
-                    displayMessages(data.messages);
-                } else {
-                    container.innerHTML = '<div class="loading">No messages yet. Be the first to post!</div>';
-                }
-            } catch (error) {
-                console.error('Error loading messages:', error);
-                container.innerHTML = '<div class="error">Failed to load messages. Make sure your Google Sheet is configured correctly.</div>';
-            } finally {
-                document.body.removeChild(loadingDiv);
-            }
-        }
-
-        // Display messages with threading
-        function displayMessages(messages) {
-            const container = document.getElementById('messagesContainer');
-            
-            // Organize messages by thread
-            const messageMap = new Map();
-            const rootMessages = [];
-            
-            messages.forEach(msg => {
-                const id = msg.id || msg.timestamp; // Use ID if available, fallback to timestamp
-                msg.id = id;
-                msg.replies = [];
-                messageMap.set(id, msg);
-                
-                if (!msg.replyTo) {
-                    rootMessages.push(msg);
-                }
-            });
-            
-            // Build reply threads
-            messages.forEach(msg => {
-                if (msg.replyTo && messageMap.has(msg.replyTo)) {
-                    messageMap.get(msg.replyTo).replies.push(msg);
-                }
-            });
-            
-            // Render messages
-            container.innerHTML = rootMessages.map(msg => renderMessage(msg, 0)).join('');
-        }
-
-        // Render a single message with its replies
-        function renderMessage(msg, depth) {
-            const indent = depth * 20;
-            const borderColor = depth > 0 ? '#ddd' : '#667eea';
-            
-            let html = `
-                <div class="message" style="margin-left: ${indent}px; border-left-color: ${borderColor};" data-id="${msg.id}">
-                    <div class="message-header">
-                        <span class="message-author">${escapeHtml(msg.author)}</span>
-                        <span class="message-pokemon">${escapeHtml(msg.pokemon)}</span>
-                    </div>
-                    <div class="message-content">${escapeHtml(msg.message)}</div>
-                    <div style="font-size: 0.8em; color: #999; margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <span>${new Date(msg.timestamp).toLocaleString()}</span>
-                        <button onclick="replyToMessage('${msg.id}', '${escapeHtml(msg.author)}')" style="background: #f0f4ff; border: 1px solid #667eea; color: #667eea; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
-                            💬 Reply
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Add replies recursively
-            if (msg.replies && msg.replies.length > 0) {
-                msg.replies.forEach(reply => {
-                    html += renderMessage(reply, depth + 1);
-                });
-            }
-            
-            return html;
-        }
-
-        // Reply to a message
-        function replyToMessage(messageId, authorName) {
-            replyingTo = messageId;
-            const messageText = document.getElementById('messageText');
-            messageText.focus();
-            messageText.placeholder = `Replying to ${authorName}... (Click cancel to remove)`;
-            
-            // Show reply indicator
-            const form = document.querySelector('.message-form');
-            let indicator = document.getElementById('replyIndicator');
-            if (!indicator) {
-                indicator = document.createElement('div');
-                indicator.id = 'replyIndicator';
-                indicator.style.cssText = 'background: #f0f4ff; border-left: 3px solid #667eea; padding: 10px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;';
-                form.insertBefore(indicator, form.firstChild);
-            }
-            indicator.innerHTML = `
-                <span style="color: #667eea; font-size: 0.9em;">💬 Replying to ${escapeHtml(authorName)}</span>
-                <button onclick="cancelReply()" style="background: none; border: none; color: #999; cursor: pointer; font-size: 1.2em;">✕</button>
-            `;
-        }
-
-        // Cancel reply
-        function cancelReply() {
-            replyingTo = null;
-            const indicator = document.getElementById('replyIndicator');
-            if (indicator) {
-                indicator.remove();
-            }
-            document.getElementById('messageText').placeholder = 'Share your thoughts about this Pokemon...';
-        }
-
-        // Escape HTML to prevent XSS
+        // Utility function to escape HTML
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // Initialize
-        window.onload = function() {
-            // Load Pokemon and messages in parallel (don't wait for one to finish)
-            loadPokemon().catch(console.error);
-            loadMessages().catch(console.error);
-            
-            // Auto-update messages every 30 seconds
-            setInterval(() => loadMessages().catch(console.error), 30000);
-        };
+        // Show error message
+        function showError(error) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = `<div class="error">Error: ${error.message || error}</div>`;
+        }
 
-        // Update select dropdown
-        document.getElementById('pokemonSelect').addEventListener('change', function() {
-            if (this.value) {
-                selectPokemon(this.value);
-            } else {
-                selectedPokemon = null;
-                document.querySelectorAll('.pokemon-card').forEach(card => {
-                    card.classList.remove('selected');
-                });
-                loadMessages();
-            }
-        });
+        // Initialize app
+        window.onload = function() {
+            loadCharacters();
+            loadMessages();
+            
+            // Refresh messages every 30 seconds
+            setInterval(loadMessages, 30000);
+        };
     </script>
 </body>
 </html>
